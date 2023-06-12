@@ -17,7 +17,7 @@ class UnexpectedValueTypeException implements Exception {}
 /// {@template shared_preferences_service}
 /// A service that provides shared preferences functionality.
 ///
-/// This service is a wrapper around the [SharedPreferences] class.
+/// This service uses the `shared_preferences` package.
 ///
 /// ```dart
 /// final sharedPreferences = await SharedPreferences.getInstance();
@@ -122,20 +122,15 @@ class SharedPreferencesService {
 
   /// Returns the value for the given [key].
   ///
-  /// Throws a [UnexpectedValueTypeException] if the value type is unexpected.
-  ///
   /// Throws a [KeyNotFoundException] if the key is not found.
   Object get({required String key}) {
     final Object? response;
     try {
       response = _sharedPreferences.get(key);
+
+      if (response == null) throw Exception();
     } catch (_) {
       log('Failed to get value!', name: 'SharedPreferencesService');
-      throw UnexpectedValueTypeException();
-    }
-
-    if (response == null) {
-      log('Key not found!', name: 'SharedPreferencesService');
       throw KeyNotFoundException();
     }
 
