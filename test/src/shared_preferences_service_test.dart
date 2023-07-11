@@ -45,6 +45,18 @@ void main() {
     when(() => sharedPreferences.get(any())).thenAnswer((_) => response);
   }
 
+  void arrangeGetBoolResponse({
+    bool? response,
+    bool throwException = false,
+  }) {
+    if (throwException) {
+      when(() => sharedPreferences.getBool(any())).thenThrow(Exception());
+      return;
+    }
+
+    when(() => sharedPreferences.getBool(any())).thenAnswer((_) => response);
+  }
+
   group('SharedPreferencesService', () {
     test('can be instantiated', () {
       expect(
@@ -151,6 +163,36 @@ void main() {
 
       expect(
         () => sut.get(key: 'key'),
+        throwsA(isA<KeyNotFoundException>()),
+      );
+    });
+
+    test('can get bool', () async {
+      arrangeGetBoolResponse(response: true);
+
+      sut.getBool(key: 'key');
+
+      verify(() => sharedPreferences.getBool(any())).called(1);
+    });
+
+    test(
+        'can throw UnexpectedValueTypeException when the value type is '
+        'unexpected.', () async {
+      arrangeGetBoolResponse(throwException: true);
+
+      expect(
+        () => sut.getBool(key: 'key'),
+        throwsA(isA<UnexpectedValueTypeException>()),
+      );
+    });
+
+    test(
+        'can throw KeyNotFoundException when can not get any bool with the '
+        'given key', () async {
+      arrangeGetBoolResponse();
+
+      expect(
+        () => sut.getBool(key: 'key'),
         throwsA(isA<KeyNotFoundException>()),
       );
     });
