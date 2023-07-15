@@ -57,6 +57,18 @@ void main() {
     when(() => sharedPreferences.getBool(any())).thenAnswer((_) => response);
   }
 
+  void arrangeGetDoubleResponse({
+    double? response,
+    bool throwException = false,
+  }) {
+    if (throwException) {
+      when(() => sharedPreferences.getDouble(any())).thenThrow(Exception());
+      return;
+    }
+
+    when(() => sharedPreferences.getDouble(any())).thenAnswer((_) => response);
+  }
+
   group('SharedPreferencesService', () {
     test('can be instantiated', () {
       expect(
@@ -176,8 +188,8 @@ void main() {
     });
 
     test(
-        'can throw UnexpectedValueTypeException when the value type is '
-        'unexpected.', () async {
+        'can throw UnexpectedValueTypeException when the value type is not '
+        'bool.', () async {
       arrangeGetBoolResponse(throwException: true);
 
       expect(
@@ -193,6 +205,36 @@ void main() {
 
       expect(
         () => sut.getBool(key: 'key'),
+        throwsA(isA<KeyNotFoundException>()),
+      );
+    });
+
+    test('can get double', () async {
+      arrangeGetDoubleResponse(response: 0);
+
+      sut.getDouble(key: 'key');
+
+      verify(() => sharedPreferences.getDouble(any())).called(1);
+    });
+
+    test(
+        'can throw UnexpectedValueTypeException when the value type is not '
+        'double.', () async {
+      arrangeGetDoubleResponse(throwException: true);
+
+      expect(
+        () => sut.getDouble(key: 'key'),
+        throwsA(isA<UnexpectedValueTypeException>()),
+      );
+    });
+
+    test(
+        'can throw KeyNotFoundException when can not get any double with the '
+        'given key', () async {
+      arrangeGetDoubleResponse();
+
+      expect(
+        () => sut.getDouble(key: 'key'),
         throwsA(isA<KeyNotFoundException>()),
       );
     });
