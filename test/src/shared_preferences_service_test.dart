@@ -69,6 +69,47 @@ void main() {
     when(() => sharedPreferences.getDouble(any())).thenAnswer((_) => response);
   }
 
+  void arrangeGetIntResponse({
+    int? response,
+    bool throwException = false,
+  }) {
+    if (throwException) {
+      when(() => sharedPreferences.getInt(any())).thenThrow(Exception());
+      return;
+    }
+
+    when(() => sharedPreferences.getInt(any())).thenAnswer((_) => response);
+  }
+
+  void arrangeGetKeysResponse({required Set<String> response}) {
+    when(() => sharedPreferences.getKeys()).thenAnswer((_) => response);
+  }
+
+  void arrangeGetStringResponse({
+    String? response,
+    bool throwException = false,
+  }) {
+    if (throwException) {
+      when(() => sharedPreferences.getString(any())).thenThrow(Exception());
+      return;
+    }
+
+    when(() => sharedPreferences.getString(any())).thenAnswer((_) => response);
+  }
+
+  void arrangeGetStringListResponse({
+    List<String>? response,
+    bool throwException = false,
+  }) {
+    if (throwException) {
+      when(() => sharedPreferences.getStringList(any())).thenThrow(Exception());
+      return;
+    }
+
+    when(() => sharedPreferences.getStringList(any()))
+        .thenAnswer((_) => response);
+  }
+
   group('SharedPreferencesService', () {
     test('can be instantiated', () {
       expect(
@@ -128,7 +169,7 @@ void main() {
       );
     });
 
-    test('can set string', () async {
+    test('can set String', () async {
       arrangeSetStringResponse(response: true);
 
       await sut.setString(key: 'key', value: 'value');
@@ -136,7 +177,7 @@ void main() {
       verify(() => sharedPreferences.setString(any(), any())).called(1);
     });
 
-    test('can throw SetValueException when can not set string', () {
+    test('can throw SetValueException when can not set String', () {
       arrangeSetStringResponse(response: false);
 
       expect(
@@ -145,7 +186,7 @@ void main() {
       );
     });
 
-    test('can set list of string', () async {
+    test('can set List<String>', () async {
       arrangeSetStringListResponse(response: true);
 
       await sut.setStringList(key: 'key', value: []);
@@ -153,7 +194,7 @@ void main() {
       verify(() => sharedPreferences.setStringList(any(), any())).called(1);
     });
 
-    test('can throw SetValueException when can not set list of string', () {
+    test('can throw SetValueException when can not set List<String>', () {
       arrangeSetStringListResponse(response: false);
 
       expect(
@@ -189,7 +230,7 @@ void main() {
 
     test(
         'can throw UnexpectedValueTypeException when the value type is not '
-        'bool.', () async {
+        'bool', () async {
       arrangeGetBoolResponse(throwException: true);
 
       expect(
@@ -219,7 +260,7 @@ void main() {
 
     test(
         'can throw UnexpectedValueTypeException when the value type is not '
-        'double.', () async {
+        'double', () async {
       arrangeGetDoubleResponse(throwException: true);
 
       expect(
@@ -235,6 +276,114 @@ void main() {
 
       expect(
         () => sut.getDouble(key: 'key'),
+        throwsA(isA<KeyNotFoundException>()),
+      );
+    });
+
+    test('can get int', () async {
+      arrangeGetIntResponse(response: 0);
+
+      sut.getInt(key: 'key');
+
+      verify(() => sharedPreferences.getInt(any())).called(1);
+    });
+
+    test(
+        'can throw UnexpectedValueTypeException when the value type is not '
+        'int', () async {
+      arrangeGetIntResponse(throwException: true);
+
+      expect(
+        () => sut.getInt(key: 'key'),
+        throwsA(isA<UnexpectedValueTypeException>()),
+      );
+    });
+
+    test(
+        'can throw KeyNotFoundException when can not get any int with the '
+        'given key', () async {
+      arrangeGetIntResponse();
+
+      expect(
+        () => sut.getInt(key: 'key'),
+        throwsA(isA<KeyNotFoundException>()),
+      );
+    });
+
+    test('can get keys', () async {
+      arrangeGetKeysResponse(response: {'key'});
+
+      sut.getKeys();
+
+      verify(() => sharedPreferences.getKeys()).called(1);
+    });
+
+    test('can throw NoKeysAvailableException when there is no key available',
+        () async {
+      arrangeGetKeysResponse(response: {});
+
+      expect(
+        () => sut.getKeys(),
+        throwsA(isA<NoKeysAvailableException>()),
+      );
+    });
+
+    test('can get String', () async {
+      arrangeGetStringResponse(response: 'value');
+
+      sut.getString(key: 'key');
+
+      verify(() => sharedPreferences.getString(any())).called(1);
+    });
+
+    test(
+        'can throw UnexpectedValueTypeException when the value type is not '
+        'String', () async {
+      arrangeGetStringResponse(throwException: true);
+
+      expect(
+        () => sut.getString(key: 'key'),
+        throwsA(isA<UnexpectedValueTypeException>()),
+      );
+    });
+
+    test(
+        'can throw KeyNotFoundException when can not get any String with the '
+        'given key', () async {
+      arrangeGetStringResponse();
+
+      expect(
+        () => sut.getString(key: 'key'),
+        throwsA(isA<KeyNotFoundException>()),
+      );
+    });
+
+    test('can get List<String>', () async {
+      arrangeGetStringListResponse(response: ['value']);
+
+      sut.getStringList(key: 'key');
+
+      verify(() => sharedPreferences.getStringList(any())).called(1);
+    });
+
+    test(
+        'can throw UnexpectedValueTypeException when the value type is not '
+        'List<String>', () async {
+      arrangeGetStringListResponse(throwException: true);
+
+      expect(
+        () => sut.getStringList(key: 'key'),
+        throwsA(isA<UnexpectedValueTypeException>()),
+      );
+    });
+
+    test(
+        'can throw KeyNotFoundException when can not get List<String> with the '
+        'given key', () async {
+      arrangeGetStringListResponse();
+
+      expect(
+        () => sut.getStringList(key: 'key'),
         throwsA(isA<KeyNotFoundException>()),
       );
     });
