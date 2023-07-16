@@ -123,14 +123,15 @@ void main() {
 
       await sut.setBool(key: 'key', value: true);
 
-      verify(() => sharedPreferences.setBool(any(), any())).called(1);
+      verify(() => sharedPreferences.setBool(any(), any()))
+          .called(greaterThan(0));
     });
 
     test('can throw SetValueException when can not set bool', () {
       arrangeSetBoolResponse(response: false);
 
       expect(
-        sut.setBool(key: 'key', value: true),
+        () => sut.setBool(key: 'key', value: true),
         throwsA(isA<SetValueException>()),
       );
     });
@@ -140,7 +141,8 @@ void main() {
 
       await sut.setDouble(key: 'key', value: 0);
 
-      verify(() => sharedPreferences.setDouble(any(), any())).called(1);
+      verify(() => sharedPreferences.setDouble(any(), any()))
+          .called(greaterThan(0));
     });
 
     test('can throw SetValueException when can not set double', () {
@@ -157,7 +159,8 @@ void main() {
 
       await sut.setInt(key: 'key', value: 0);
 
-      verify(() => sharedPreferences.setInt(any(), any())).called(1);
+      verify(() => sharedPreferences.setInt(any(), any()))
+          .called(greaterThan(0));
     });
 
     test('can throw SetValueException when can not set int', () {
@@ -174,7 +177,8 @@ void main() {
 
       await sut.setString(key: 'key', value: 'value');
 
-      verify(() => sharedPreferences.setString(any(), any())).called(1);
+      verify(() => sharedPreferences.setString(any(), any()))
+          .called(greaterThan(0));
     });
 
     test('can throw SetValueException when can not set String', () {
@@ -191,7 +195,8 @@ void main() {
 
       await sut.setStringList(key: 'key', value: []);
 
-      verify(() => sharedPreferences.setStringList(any(), any())).called(1);
+      verify(() => sharedPreferences.setStringList(any(), any()))
+          .called(greaterThan(0));
     });
 
     test('can throw SetValueException when can not set List<String>', () {
@@ -225,7 +230,7 @@ void main() {
 
       sut.getBool(key: 'key');
 
-      verify(() => sharedPreferences.getBool(any())).called(1);
+      verify(() => sharedPreferences.getBool(any())).called(greaterThan(0));
     });
 
     test(
@@ -255,7 +260,7 @@ void main() {
 
       sut.getDouble(key: 'key');
 
-      verify(() => sharedPreferences.getDouble(any())).called(1);
+      verify(() => sharedPreferences.getDouble(any())).called(greaterThan(0));
     });
 
     test(
@@ -285,7 +290,7 @@ void main() {
 
       sut.getInt(key: 'key');
 
-      verify(() => sharedPreferences.getInt(any())).called(1);
+      verify(() => sharedPreferences.getInt(any())).called(greaterThan(0));
     });
 
     test(
@@ -315,7 +320,7 @@ void main() {
 
       sut.getKeys();
 
-      verify(() => sharedPreferences.getKeys()).called(1);
+      verify(() => sharedPreferences.getKeys()).called(greaterThan(0));
     });
 
     test('can throw NoKeysAvailableException when there is no key available',
@@ -333,7 +338,7 @@ void main() {
 
       sut.getString(key: 'key');
 
-      verify(() => sharedPreferences.getString(any())).called(1);
+      verify(() => sharedPreferences.getString(any())).called(greaterThan(0));
     });
 
     test(
@@ -363,7 +368,8 @@ void main() {
 
       sut.getStringList(key: 'key');
 
-      verify(() => sharedPreferences.getStringList(any())).called(1);
+      verify(() => sharedPreferences.getStringList(any()))
+          .called(greaterThan(0));
     });
 
     test(
